@@ -4,6 +4,7 @@ import router from '@/router'
 import qs from 'qs'
 import merge from 'lodash/merge'
 import { clearLoginInfo } from '@/utils'
+import { reject } from 'lodash'
 
 const http = axios.create({
   timeout: 1000 * 30,
@@ -30,6 +31,9 @@ http.interceptors.response.use(response => {
   if (response.data && response.data.code === 401) { // 401, token失效
     clearLoginInfo()
     router.push({ name: 'login' })
+  }
+  if (response.data.code === 5000) {
+    return Promise.reject(response.data)
   }
   return response
 }, error => {
